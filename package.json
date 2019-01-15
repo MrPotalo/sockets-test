@@ -5,7 +5,11 @@
     "license": "MIT",
     "scripts": {
       "start": "concurrently \"cd server && yarn start\" \"cd client && yarn start\"",
-      "all": "yarn && cd client && yarn && cd ../server && yarn"
+      "all": "yarn && cd client && yarn && cd ../server && yarn",
+      "postinstall": "cd client && yarn build && cd .."
+    },
+    "engines": {
+      "node": "~8.12.0"
     },
     "dependencies": {
       "concurrently": "^4.0.1"
