@@ -11,8 +11,17 @@ app.get('/', (req,res,next) => {
     res.sendFile(__dirname + './index.html');
 });
 
+let connected = 0;
 io.on('connection', (socket) => {
-    socket.emit('hello', {message: 'hello world'});
+    connected++;
+    io.emit('hey', { message: 'User connected', color: '#00ff00'})
+    socket.on('hey', ({ message }) => {
+        io.emit('hey', { message });
+    })
+    socket.on('disconnect', () => {
+        connected--;
+        io.emit('hey', { message: 'User disconnected', color: '#ff0000'})
+    })
 });
 
 server.listen(port);
