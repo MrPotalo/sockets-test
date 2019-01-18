@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 
+import Game from './Game.js';
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -8,28 +10,30 @@ class App extends Component {
     this.state = {msgs: []};
   }
 
-  componentDidMount() {
-    this.props.Socket.on('hey', (message) => {
-      this.setState((prevState) => ({
-        msgs: [...prevState.msgs, message]
-      }));
-    })
-  }
-
-  pushMsg() {
-    this.props.Socket.emit('hey', { message: "Hey" });
+  joinClicked() {
+    const code = document.getElementById("txtCode").value;
+    if (code !== '') {
+      this.props.Socket.emit('joinRoom', code);
+      this.setState({ room: code });
+    } 
   }
 
   render() {
     return (
-      <div className="App">
-        <button onClick={() => this.pushMsg()} value={"Hey"}></button>
-        {this.state.msgs.map((msg) => {
-          return (
-            <div style={{color: msg.color || '#000'}}>{msg.message}</div>
-          )
-        })}
-      </div>
+        this.state.room ? <Game Socket={this.props.Socket} /> :
+        <div className="App">
+          <div id="divEnterName">
+            <span>Enter Name:</span>
+            <input type="text" placeholder="Name"></input>
+          </div>
+          <div id="divEnterCode">
+            <span>Enter Code:</span>
+            <input id="txtCode" type="password" placeholder="Code"></input>
+          </div>
+          <div id="divJoin">
+            <input type="button" onClick={() => this.joinClicked()} value="Join"></input>
+          </div>
+        </div>
     );
   }
 }
