@@ -1,0 +1,128 @@
+{
+  "board": [
+    [
+      { "top": { "type": "red" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } }
+    ],
+    [
+      { "bottom": { "type": "grass" } },
+      { "top": { "type": "red" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } }
+    ],
+    [
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "top": { "type": "red" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } }
+    ],
+    [
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "top": { "type": "red" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } }
+    ],
+    [
+      { "top": { "type": "blue" } },
+      {
+        "middle": { "type": "wheatSeed", "progress": 50 },
+        "bottom": { "type": "dirt" }
+      },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } }
+    ],
+    [
+      { "top": { "type": "red" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } }
+    ],
+    [
+      { "top": { "type": "red" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } }
+    ],
+    [
+      { "top": { "type": "red" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } }
+    ],
+    [
+      { "top": { "type": "red" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } }
+    ],
+    [
+      { "top": { "type": "red" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } },
+      { "bottom": { "type": "grass" } }
+    ]
+  ],
+  "entities": []
+}

@@ -1,21 +1,22 @@
 {
-    "name": "socket-test",
-    "version": "1.0.0",
-    "main": "index.js",
-    "license": "MIT",
-    "scripts": {
-      "dev": "concurrently \"nodemon src/index.js\" \"cd client && yarn start\"",
-      "all": "yarn && cd client && yarn",
-      "start": "node src/index.js",
-      "heroku-postbuild": "cd client && yarn && yarn build"
-    },
-    "engines": {
-      "node": "~8.12.0"
-    },
-    "dependencies": {
-      "concurrently": "^4.0.1",
-      "express": "^4.16.4",
-      "socket.io": "^2.2.0",
-      "nodemon": "^1.18.4"
-    }
+  "name": "socket-test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "concurrently \"nodemon src/index.js\" \"cd client && yarn start\"",
+    "all": "yarn && cd client && yarn",
+    "start": "node src/index.js",
+    "heroku-postbuild": "cd client && yarn && yarn build"
+  },
+  "engines": {
+    "node": "~8.12.0"
+  },
+  "dependencies": {
+    "concurrently": "^4.0.1",
+    "express": "^4.16.4",
+    "lodash": "^4.17.11",
+    "nodemon": "^1.18.4",
+    "socket.io": "^2.2.0"
   }
+}

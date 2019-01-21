@@ -1,0 +1,28 @@
+#gameScreen {
+    width: 100%;
+    height: 100%;
+}
+#gameBoard {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+#gameBoard > .tile {
+    width: calc(5vw + 0.1px);
+    height: calc(5vw + 0.1px);
+    position: absolute;
+    display: flex;
+    background-color: #008800;
+}
+#gameBoard > .tile.red {
+    background-color: red;
+}
+#gameBoard > .tile.dirt {
+    background-color: #441111;
+}
+#gameBoard > .tile.blue {
+    background-color: blue;
+}
+#gameBoard > .tile.wheat {
+    background-color: #ffff00;
+}
