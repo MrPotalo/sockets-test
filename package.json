@@ -5,8 +5,9 @@
   "license": "MIT",
   "scripts": {
     "dev": "concurrently \"nodemon src/index.js\" \"cd client && yarn start\"",
+    "prod": "yarn heroku-postbuild && yarn start",
     "all": "yarn && cd client && yarn",
-    "start": "node src/index.js",
+    "start": "set PORT=3000 && node src/index.js",
     "heroku-postbuild": "cd client && yarn && yarn build"
   },
   "engines": {

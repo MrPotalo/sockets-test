@@ -141,7 +141,7 @@ class Game extends Component {
                 });
             })}
             {this.state.entities.map((entity, i) => {
-                return (<div style={{width: entity.size.x * SCALE + 'vw', height: entity.size.y * SCALE + 'vw', position: 'absolute', top: entity.position.y * SCALE + 'vw', left: entity.position.x * SCALE + 'vw', backgroundColor: '#000000', borderRadius: '30%'}}></div>);
+                return (<div key={i} style={{width: entity.size.x * SCALE + 'vw', height: entity.size.y * SCALE + 'vw', position: 'absolute', top: entity.position.y * SCALE + 'vw', left: entity.position.x * SCALE + 'vw', backgroundColor: '#000000', borderRadius: '30%'}}></div>);
             })}
             </div>
         }
