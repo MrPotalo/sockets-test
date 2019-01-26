@@ -1,15 +1,14 @@
 #gameScreen {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
 }
 #gameBoard {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     position: relative;
+    overflow: hidden;
 }
 #gameBoard > .tile {
-    width: calc(5vw + 0.1px);
-    height: calc(5vw + 0.1px);
     position: absolute;
     display: flex;
     background-color: #008800;

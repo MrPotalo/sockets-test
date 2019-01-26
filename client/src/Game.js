@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import './Game.css';
 const FPS = 60;
-const SCALE = 5;
+const SCALE = 100;
 const PLAYER_SPEED = 0.05;
+const RENDER_DISTANCE = {x: 3, y: 3};
 
 class Game extends Component {
     constructor(props) {
@@ -18,35 +19,58 @@ class Game extends Component {
                 return {board: newBoard};
             });
         });
-        props.Socket.on('join', ({socketId, gameData}) => {
-            this.setState({id: socketId, ...gameData});
+        props.Socket.on('join', ({socketId}) => {
+            this.setState({id: socketId});
+        });
+        props.Socket.on('boardGenerationDone', () => {
+            props.Socket.emit('getPlayerGameData');
+        })
+        props.Socket.on('playerGameData', (gameData) => {
+            this.setState(gameData);
             this.gameInterval = setInterval(() => { this.gameLoop() }, 1000 / FPS);
         })
 
         props.Socket.on('removeEntity', (searchTerm) => {
-            if (typeof(searchTerm) === 'number') {
-                this.setState((lastState) => {
+            this.setState((lastState) => {
+                if (searchTerm.type === 'player') {
+                    let players = lastState.players.slice();
+                    let playerIndex = _.findIndex(players, searchTerm);
+                    players.splice(playerIndex, 1);
+                    return { players };
+                }else {
                     let entities = lastState.entities.slice();
-                    entities.splice(searchTerm, 1);
+                    let entityIndex = _.findIndex(entities, searchTerm);
+                    entities.splice(entityIndex, 1);
                     return { entities };
-                })
-            }
-            const playerIndex = _.findIndex(this.state.entities, searchTerm);
-            this.state.entities.splice(playerIndex, 1);
+                }
+            });
         });
         props.Socket.on('addEntity', (entity) => {
             this.setState((lastState) => {
-                let entities = lastState.entities.slice();
-                entities.push(entity);
-                return { entities };
+                if (entity.type === 'player') {
+                    let players = lastState.players.slice();
+                    players.push(entity);
+                    return { players };
+                } else {
+                    let entities = lastState.entities.slice();
+                    entities.push(entity);
+                    return { entities };
+                }
             })
         });
         props.Socket.on('entityChanged', (entity) => {
             this.setState((lastState) => {
-                let entities = lastState.entities.slice();
-                let entityIndex = _.findIndex(entities, {id: entity.id});
-                entities[entityIndex] = entity;
-                return {entities};
+                if (entity.type === 'player') {
+                    let players = lastState.players.slice();
+                    let playerIndex = _.findIndex(players, {id: entity.id});
+                    players[playerIndex] = entity;
+                    return { players };
+                } else {
+                    let entities = lastState.entities.slice();
+                    let entityIndex = _.findIndex(entities, {id: entity.id});
+                    entities[entityIndex] = entity;
+                    return { entities };
+                }
             })
         })
         this.state = {};
@@ -70,6 +94,13 @@ class Game extends Component {
         }
     }
 
+    mouse = {
+        leftClick: -1,
+        rightClick: -1,
+        x: 0,
+        y: 0
+    }
+
     keyDown = (e) => {
         e.preventDefault();
         this.keys[e.keyCode] = 0;
@@ -79,26 +110,66 @@ class Game extends Component {
         this.keys[e.keyCode] = -1;
     }
 
+    mouseMove = (e) => {
+        this.mouse.x = e.x;
+        this.mouse.y = e.y;
+    }
+    mouseUp = (e) => {
+        if (e.which === 1) {
+            this.mouse.leftClick = -1;
+        } else if (e.which === 3) {
+            this.mouse.rightClick = -1;
+        }
+        this.mouseMove(e);
+    }
+    mouseDown = (e) => {
+        if (e.which === 1) {
+            this.mouse.leftClick = 0;
+        } else if (e.which === 3) {
+            this.mouse.rightClick = 0;
+        }
+        this.mouseMove(e);
+    }
+
     componentDidMount() {
         window.addEventListener('keydown', this.keyDown);
         window.addEventListener('keyup', this.keyUp);
+        window.addEventListener('mousemove', this.mouseMove);
+        window.addEventListener('mousedown', this.mouseDown);
+        window.addEventListener('mouseup', this.mouseUp);
     }
     componentWillUnmount() {
         window.removeEventListener('keydown', this.keyDown);
         window.removeEventListener('keyup', this.keyUp);
+        window.removeEventListener('mousemove', this.mouseMove);
+        window.removeEventListener('mousedown', this.mouseDown);
+        window.removeEventListener('mouseup', this.mouseUp);
         clearInterval(this.gameInterval);
     }
 
     moveEntity = (velocity, searchTerm) => {
         this.setState((lastState) => {
-            let entities = lastState.entities.slice();
-            let me = _.find(entities, searchTerm);
+            let isPlayer = searchTerm.type === 'player';
+            let players;
+            let entities;
+            let me;
+            if (isPlayer) {
+                players = lastState.players.slice();
+                me = _.find(players, searchTerm);
+            } else {
+                entities = lastState.entities.slice();
+                me = _.find(entities, searchTerm);
+            }
             if (me) {
                 me.position.y += velocity.y;
                 me.position.x += velocity.x;
                 this.props.Socket.emit('entityChanged', me);
             }
-            return { entities };
+            if (isPlayer) {
+                return { players };
+            } else {
+                return { entities };
+            }
         });
     }
 
@@ -123,27 +194,47 @@ class Game extends Component {
                 }
             }
         });
+        if (this.mouse.leftClick !== -1) {
+            this.mouse.leftClick++;
+        }
+        if (this.mouse.rightClick !== -1) {
+            this.mouse.rightClick++;
+        }
     }
 
     render() {
         let gameBoard = null;
         if (this.state.board) {
-            gameBoard = <div id="gameBoard">
-                {this.state.board.map((tileRow, iRow) => {
-                return tileRow.map((tile, iCol) => {
-                    let layer = tile.top || tile.bottom;
-                    if (!tile.top && tile.middle && tile.middle.solid) {
-                        layer = tile.middle;
+            const player = _.find(this.state.players, {type: 'player', playerId: this.state.id});
+            let offset = {x: 0, y: 0};
+            let gameBoardElement = document.getElementById('gameBoard');
+            if (player && gameBoardElement) {
+                offset = {x: (gameBoardElement.clientWidth / (2*SCALE)) - player.size.x / 2 - player.position.x, y: (gameBoardElement.clientHeight / (2*SCALE)) - player.size.y / 2 - player.position.y}
+            }
+            if (player) {
+                gameBoard = <div id="gameBoard">
+                    {this.state.board.map((tileRow, iRow) => {
+                    if (Math.abs(iRow - player.position.y + this.state.offset.y) > RENDER_DISTANCE.y) {
+                        return null;
                     }
-                    return <div style={{left: iCol * SCALE + 'vw', top: iRow * SCALE + 'vw'}} key={iCol} className={'tile ' + (layer.type || '')}>
-                            {(!tile.top && tile.middle && !tile.middle.solid && this.specialRenders[tile.middle.type]) ? this.specialRenders[tile.middle.type](iRow, iCol) : null}
-                        </div>
-                });
-            })}
-            {this.state.entities.map((entity, i) => {
-                return (<div key={i} style={{width: entity.size.x * SCALE + 'vw', height: entity.size.y * SCALE + 'vw', position: 'absolute', top: entity.position.y * SCALE + 'vw', left: entity.position.x * SCALE + 'vw', backgroundColor: '#000000', borderRadius: '30%'}}></div>);
-            })}
-            </div>
+                    return tileRow.map((tile, iCol) => {
+                        if (Math.abs(iCol - player.position.x + this.state.offset.x) > RENDER_DISTANCE.x) {
+                            return null;
+                        }
+                        let layer = tile.top || tile.bottom;
+                        if (!tile.top && tile.middle && tile.middle.solid) {
+                            layer = tile.middle;
+                        }
+                        return <div style={{height: SCALE + 'px', width: SCALE + 'px', left: (offset.x + iCol) * SCALE + 'px', top: (offset.y + iRow) * SCALE + 'px'}} key={iCol} className={'tile ' + (layer.type || '')}>
+                                {(!tile.top && tile.middle && !tile.middle.solid && this.specialRenders[tile.middle.type]) ? this.specialRenders[tile.middle.type](iRow, iCol) : null}
+                            </div>
+                    });
+                })}
+                {_.concat(this.state.entities, this.state.players).map((entity, i) => {
+                    return (<div key={i} style={{width: entity.size.x * SCALE + 'px', height: entity.size.y * SCALE + 'px', position: 'absolute', top: (offset.y + entity.position.y) * SCALE + 'px', left: (offset.x + entity.position.x) * SCALE + 'px', backgroundColor: '#000000', borderRadius: '30%'}}></div>);
+                })}
+                </div>
+            }
         }
         return (
             <div id="gameScreen">
