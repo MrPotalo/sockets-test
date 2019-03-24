@@ -8,20 +8,3 @@
     position: relative;
     overflow: hidden;
 }
-#gameBoard > .tile {
-    position: absolute;
-    display: flex;
-    background-color: #008800;
-}
-#gameBoard > .tile.red {
-    background-color: red;
-}
-#gameBoard > .tile.dirt {
-    background-color: #441111;
-}
-#gameBoard > .tile.blue {
-    background-color: blue;
-}
-#gameBoard > .tile.wheat {
-    background-color: #ffff00;
-}
