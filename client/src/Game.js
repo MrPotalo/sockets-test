@@ -35,7 +35,7 @@ class Game extends Component {
         })
         props.Socket.on("gameOver", () => {
             this.setState((oldState) => {
-                return {stage: "answer", message: null, gameData: {answers: null, players: oldState.gameData.players.map((player) => {delete player.isOut; return player})}, guessingIndex: -1}
+                return {stage: "answer", message: null, gameData: {answers: null, players: oldState.gameData.players.map((player) => {player.isOut = null; return player})}, guessingIndex: -1}
             });
         });
 
