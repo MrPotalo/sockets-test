@@ -71,7 +71,8 @@ class Game extends Component {
                         break;
                     case "guess":
                             innerContent = (
-                                [<span>{"Player " + this.state.gameData.players[this.state.guessingIndex].name + " is guessing."}</span>,<div style={{display: "flex", flexDirection: "column", height: "80%", position: "absolute", left: "50px", top: "50px"}}>,
+                                [<span>{"Player " + this.state.gameData.players[this.state.guessingIndex].name + " is guessing."}</span>,
+                                <div style={{display: "flex", flexDirection: "column", height: "80%", position: "absolute", left: "50px", top: "50px"}}>,
                                 {this.state.gameData.answers.map((answer, i) => {
                                     return <div key={i}>{answer}</div>
                                 })}
