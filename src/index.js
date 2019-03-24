@@ -17,6 +17,8 @@ let data = {};
 function getClientData(room) {
     let tempData = _.clone(data[room]);
     delete tempData.host;
+    tempData.answers = tempData.clientAnswers;
+    delete tempData.clientAnswers;
     for (let i=0;i<tempData.players.length;i++) {
         delete tempData.players[i].socket;
     }
@@ -39,14 +41,50 @@ io.on('connection', (socket) => {
         data[room].answers = [];
         data[room].numLeftToSubmit = data[room].players.length;
     });
-    socket.on("submitAnswer", (answer) => {
+    socket.on("submitAnswer", (answer, cbFn) => {
         data[room].answers[playerIndex] = answer;
+        cbFn(true);
         if (--data[room].numLeftToSubmit <= 0) {
+            data[room].clientAnswers = [];
+            for (let i=0;i<data[room].answers.length;i++) {
+                data[room].clientAnswers[i] = {answer: data[room].answers[i], index: i};
+            }
+            data[room].clientAnswers = _.shuffle(data[room].clientAnswers);
             let tempData = getClientData(room);
             io.to(room).emit("dataChanged", tempData);
+            data[room].currentGuesser = 0;
             io.to(room).emit("gameStageGuess", 0);
         }
     })
+    socket.on("makeGuess", (answerIndex, guessPlayerIndex, cbFn) => {
+        if (answerIndex == guessPlayerIndex) {
+            data[room].players[guessPlayerIndex].isOut = true;
+            io.to(room).emit("playerOut", guessPlayerIndex);
+        }
+        cbFn(true);
+        data[room].host.emit("madeGuess", playerIndex, data[room].answers[answerIndex], guessPlayerIndex, (guessPlayerIndex == answerIndex));
+    });
+    socket.on("nextGuesser", ()=> {
+        let nextGuesser = -1;
+        for (i=1;i<data[room].players.length;i++) {
+            if (!data[room].players[(data[room].currentGuesser + i) % data[room].players.length].isOut) {
+                nextGuesser = (data[room].currentGuesser + i) % data[room].players.length;
+                break;
+            }
+        }
+        if (nextGuesser == data[room].currentGuesser || nextGuesser == -1) {
+            data[room].answers = [];
+            for (let i=0;i<data[room].players.length;i++) {
+                data[room].players.isOut = undefined;
+            }
+            data[room].currentGuesser = 0;
+            data[room].numLeftToSubmit = data[room].players.length;
+            io.to(room).emit("gameOver");
+        } else {
+            data[room].currentGuesser = nextGuesser;
+            io.to(room).emit("gameStageGuess", data[room].currentGuesser);
+        }
+    });
 
 
     socket.on("requestJoin", (playerData, cbFn) => {
@@ -54,7 +92,7 @@ io.on('connection', (socket) => {
         if (data[roomCode]) {
             for (let i=0;i<data[roomCode].players.length;i++) {
                 if (data[roomCode].players[i].name == playerData.name) {
-                    cbFn({Message: "A player with that name is already in this room!"});
+                    cbFn(null, {Message: "A player with that name is already in this room!"});
                     return;
                 }
             }
@@ -62,11 +100,11 @@ io.on('connection', (socket) => {
             playerIndex = data[roomCode].players.length;
             data[roomCode].players.push({name: playerData.name, socket});
             socket.join(roomCode);
-            cbFn();
+            cbFn({index: playerIndex});
             let tempData = getClientData(room);
             io.to(roomCode).emit("dataChanged", tempData);
         } else {
-            cbFn({Message: "Room does not exist!"});
+            cbFn(null, {Message: "Room does not exist!"});
         }
     })
     socket.on('disconnect', () => {
