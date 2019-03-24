@@ -20,6 +20,7 @@ function getClientData(room) {
     for (let i=0;i<tempData.players.length;i++) {
         delete tempData.players[i].socket;
     }
+    return tempData;
 }
 
 io.on('connection', (socket) => {
@@ -42,7 +43,7 @@ io.on('connection', (socket) => {
         data[room].answers[playerIndex] = answer;
         if (--data[room].numLeftToSubmit <= 0) {
             let tempData = getClientData(room);
-            io.to(roomCode).emit("dataChanged", tempData);
+            io.to(room).emit("dataChanged", tempData);
             io.to(room).emit("gameStageGuess", 0);
         }
     })

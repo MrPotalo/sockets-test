@@ -66,17 +66,16 @@ class Game extends Component {
                 switch (this.state.stage) {
                     case "answer":
                         innerContent = (
-                            [<span>Players are answering.</span>,
-                            <div style={{display: "flex", flexDirection: "column", height: "80%", position: "absolute", left: "50px", top: "50px"}}>
-                                {this.state.gameData.answers.map((answer, i) => {
-                                    return <div key={i}>{answer}</div>
-                                })}
-                            </div>]
+                            <span>Players are answering.</span>
                         );
                         break;
                     case "guess":
                             innerContent = (
-                                <span>{"Player " + this.state.gameData.players[this.state.guessingIndex].name + " is guessing."}</span>
+                                [<span>{"Player " + this.state.gameData.players[this.state.guessingIndex].name + " is guessing."}</span>,<div style={{display: "flex", flexDirection: "column", height: "80%", position: "absolute", left: "50px", top: "50px"}}>,
+                                {this.state.gameData.answers.map((answer, i) => {
+                                    return <div key={i}>{answer}</div>
+                                })}
+                            </div>]
                             )
                             break;
                     case "start":
