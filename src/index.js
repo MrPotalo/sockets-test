@@ -88,7 +88,7 @@ io.on('connection', (socket) => {
 
 
     socket.on("requestJoin", (playerData, cbFn) => {
-        const roomCode = playerData.code;
+        const roomCode = _.toUpper(playerData.code);
         if (data[roomCode]) {
             for (let i=0;i<data[roomCode].players.length;i++) {
                 if (data[roomCode].players[i].name == playerData.name) {
