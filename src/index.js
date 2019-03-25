@@ -36,8 +36,9 @@ io.on('connection', (socket) => {
         socket.join(room);
         cbFn(roomCode);
     })
-    socket.on("startGame", () => {
+    socket.on("startGame", (gameRules) => {
         io.to(room).emit("gameStart");
+        data[room].gameRules = gameRules;
         data[room].answers = [];
         data[room].numLeftToSubmit = data[room].players.length;
     });
@@ -60,19 +61,30 @@ io.on('connection', (socket) => {
         if (answerIndex == guessPlayerIndex) {
             data[room].players[guessPlayerIndex].isOut = true;
             io.to(room).emit("playerOut", guessPlayerIndex);
+            cbFn(true);
+        } else {
+            cbFn(false);
         }
-        cbFn(true);
         data[room].host.emit("madeGuess", playerIndex, data[room].answers[answerIndex], guessPlayerIndex, (guessPlayerIndex == answerIndex));
     });
-    socket.on("nextGuesser", ()=> {
+    socket.on("nextGuesser", (lastAnswerCorrect)=> {
         let nextGuesser = -1;
+        let playersLeft = data[room].players.length;
         for (i=1;i<data[room].players.length;i++) {
             if (!data[room].players[(data[room].currentGuesser + i) % data[room].players.length].isOut) {
-                nextGuesser = (data[room].currentGuesser + i) % data[room].players.length;
-                break;
+                if (nextGuesser == -1)
+                    nextGuesser = (data[room].currentGuesser + i) % data[room].players.length;
+            } else {
+                playersLeft--;
             }
         }
-        if (nextGuesser == data[room].currentGuesser || nextGuesser == -1) {
+        if (data[room].gameRules.extraGuesses && lastAnswerCorrect) {
+            nextGuesser = data[room].currentGuesser;
+        }
+        else if (data[room].gameRules.guessesWhenOut) {
+            nextGuesser = (data[room].currentGuesser + 1) % data[room].players.length;
+        }
+        if (playersLeft <= 1) {
             data[room].answers = [];
             for (let i=0;i<data[room].players.length;i++) {
                 data[room].players[i].isOut = undefined;

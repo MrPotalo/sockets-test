@@ -1,6 +1,13 @@
 * {
     box-sizing: border-box;
 }
+hr {
+    width: calc(100% + 20px);
+    margin-left: -10px;
+    margin-right: 0px;
+    border: 1px solid #bbb;
+    border-bottom-width: 0px;
+}
 #mainScreen {
     width: 100vw;
     height: 100vh;
@@ -12,12 +19,22 @@
     margin-right: 5px;
     font-size: 13pt;
 }
-#txtCode, #txtName {
+.serverMessage {
+    font-size: 24pt;
+    display: inline-block;
+    padding-top: 50px;
+}
+#txtCode, #txtName, #inputAnswer {
     border-radius: 8px;
     padding: 5px;
     border: 1px solid #a1a1a1;
     font-size: 13pt;
     width: 200px;
+}
+#inputAnswer {
+    width: 90vw;
+    text-align: center;
+    margin-bottom: 15px;
 }
 input[type="button"] {
     border-radius: 10px;
@@ -39,8 +56,23 @@ input[type="button"]:hover {
 #btnJoinGame {
     margin-top: 25px;
 }
-#titleMakeGuess {
+#hostAnswerList {
+    padding: 10px;
+    border-radius: 15px;
+    border: 2px solid #bbb;
+}
+#hostAnswer {
+    font-size: 22pt;
+}
+#titleMakeGuess, #titleEnterAnswer {
     font-size: 24pt;
+    display: inline-block;
+    width: 100vw;
+    text-align: center;
+    height: 10vh;
+}
+#btnMakeGuess {
+    height: 10vh;
 }
 .guessPlayer, .guessAnswer {
     border: 1px solid black;
@@ -50,6 +82,9 @@ input[type="button"]:hover {
     margin: 5px 5px;
     border-radius: 6px;
     font-size: 14pt;
+}
+.guessPlayer.out, .guessAnswer.out {
+    text-decoration-line: line-through;
 }
 .guessPlayer::before, .guessAnswer::before {
     content: ' \2713';
