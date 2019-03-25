@@ -128,26 +128,31 @@ class Game extends Component {
                         break;
                     case "guess":
                         if (this.state.guessingIndex == this.state.myIndex) {
+                            let answerArr = [];
+                            let playerArr = [];
+                            _.forEach(this.state.gameData.answers, (answer, i) => {
+                                    answerArr.push(<div className={"guessAnswer " + (this.state.gameData.players[answer.index].isOut ? "out " : "") + (i == this.state.guessAnswerIndex ? "selected" : "")} onClick={(e) => {this.setState({guessAnswerIndex: i})}} key={i}>{answer.answer}</div>);
+                                    playerArr.push(<div className={"guessPlayer " + (this.state.gameData.players[i].isOut ? "out " : "") + (i == this.state.guessPlayerIndex ? "selected" : "")} onClick={(e) => {
+                                        if (this.state.gameData.players[i].name !== this.state.playerData.name)
+                                            this.setState({guessPlayerIndex: i});
+                                        }} key={i}>{this.state.gameData.players[i].name}</div>);
+                            })
                             innerGameContent = [
-                                <span>Make a guess:</span>,
-                                <div style={{display: "flex", flexDirection: "column"}}>
-                                    {this.state.gameData.answers.map((answer, i) => {
-                                        return <div style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
-                                            <div onClick={(e) => {this.setState({guessAnswerIndex: i})}} key={i} style={{color: (this.state.gameData.players[answer.index].isOut ? "red" : "black"), border: (i == this.state.guessAnswerIndex) ? "1px solid red" : "1px solid black"}}>{answer.answer}</div>
-                                            <div style={{width: "20px"}}></div>
-                                            <div onClick={(e) => {
-                                                if (this.state.gameData.players[i].name !== this.state.playerData.name)
-                                                    this.setState({guessPlayerIndex: i});
-                                                }} key={i} style={{color: (this.state.gameData.players[i].isOut ? "red" : "black"), border: (i == this.state.guessPlayerIndex) ? "1px solid red" : "1px solid black"}}>{this.state.gameData.players[i].name}</div>
-                                        </div>
-                                    })}
+                                <span id="titleMakeGuess">Make a Guess</span>,
+                                <div style={{display: "flex", flexDirection: "row", margin: "15px 0px"}}>
+                                    <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between", maxHeight: "75vh", overflow: "scroll"}}>
+                                        {answerArr}
+                                    </div>
+                                    <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between", maxHeight: "75vh", overflow: "scroll"}}>
+                                        {playerArr}
+                                    </div>
                                 </div>,
-                                <input onClick={(e) => {
+                                <input id="btnMakeGuess" onClick={(e) => {
                                     if (this.state.guessAnswerIndex === -1 || this.state.guessPlayerIndex === -1)
                                         return;
                                     this.props.Socket.emit("makeGuess", this.state.gameData.answers[this.state.guessAnswerIndex].index, this.state.guessPlayerIndex, (success) => {
                                         if (success) {
-                                            this.setState({guessingIndex: -1});
+                                            this.setState({guessingIndex: -1, guessAnswerIndex: -1, guessPlayerIndex: -1});
                                         }
                                     });
                                 }} type="button" value="Make guess"></input>
@@ -156,11 +161,11 @@ class Game extends Component {
                         break;
                 }
                 content = (
-                    <div>
+                    <div style={{height: "100vh"}}>
                         {innerGameContent}
-                        <div id="playerList" style={{position: "absolute", bottom: "0px",width: "100%", height: "40px", display: "flex", flexDirection: "row"}}>
+                        <div id="playerList" style={{position: "absolute", bottom: "0px",width: "100%", display: "flex", flexDirection: "row"}}>
                             {_.map(_.get(this.state, "gameData.players", []), (player, i) => {
-                                return <div key={i} style={{border: "1px solid black", height: "100%", width: "100%"}}>{player.name}</div>
+                                return <div key={i} style={{backgroundColor: "#fff", border: "1px solid black", padding: "10px", height: "100%", width: "100%"}}>{player.name}</div>
                             })}
                         </div>
                     </div>
@@ -173,11 +178,16 @@ class Game extends Component {
                         
                         {this.state.joinGame ? 
                             <div>
-                                <span>Room code: </span>
-                                <input id="txtCode" data-index={"playerData.code"} value={this.state.playerData.code} onChange={this.onChange} type="text" placeholder="CODE"></input>
-                                <br/>
-                                <span>Your name: </span>
-                                <input id="txtName" data-index={"playerData.name"} value={this.state.playerData.name} onChange={this.onChange} type="text" placeholder="NAME"></input>
+                                <div style={{display: "flex", flexDirection: "row", justifyContent: "center"}}>
+                                    <div className="joinGameColFlex" style={{display: "flex", flexDirection: "column", justifyContent: "space-around"}}>
+                                        <span>Room code: </span>
+                                        <span>Your name: </span>
+                                    </div>
+                                    <div className="joinGameColFlex" style={{display: "flex", flexDirection: "column", justifyContent: "space-around"}}>
+                                        <input id="txtCode" data-index={"playerData.code"} value={this.state.playerData.code} onChange={this.onChange} type="text" placeholder="CODE"></input>
+                                        <input id="txtName" data-index={"playerData.name"} value={this.state.playerData.name} onChange={this.onChange} type="text" placeholder="NAME"></input>
+                                    </div>
+                                </div>
                                 <br/>
                                 <input onClick={this.attemptJoin} id="btnFinalJoin" type="button" value="Join"></input>
                                 {this.state.waiting ? 
@@ -188,8 +198,8 @@ class Game extends Component {
                             </div>
                             :
                             <div>
-                                <input id="btnJoinGame" style={{position: "absolute",left: 0,border: "none", backgroundColor: "transparent"}} onClick={this.hostGame} type="button" value="Host Game"></input>
-                                <input onClick={(e) => this.setState({joinGame: true})} type="button" value="Join Game"></input>
+                                <input id="btnHostGame" style={{position: "absolute",right: "6px",bottom: "6px", padding: "0px",border: "none", backgroundColor: "transparent"}} onClick={this.hostGame} type="button" value="Host Game"></input>
+                                <input id="btnJoinGame" onClick={(e) => this.setState({joinGame: true})} type="button" value="Join Game"></input>
                             </div>}
                     </div>
                 );

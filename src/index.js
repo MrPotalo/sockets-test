@@ -75,7 +75,7 @@ io.on('connection', (socket) => {
         if (nextGuesser == data[room].currentGuesser || nextGuesser == -1) {
             data[room].answers = [];
             for (let i=0;i<data[room].players.length;i++) {
-                data[room].players.isOut = undefined;
+                data[room].players[i].isOut = undefined;
             }
             data[room].currentGuesser = 0;
             data[room].numLeftToSubmit = data[room].players.length;

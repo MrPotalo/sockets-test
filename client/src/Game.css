@@ -1,10 +1,72 @@
-#gameScreen {
+* {
+    box-sizing: border-box;
+}
+#mainScreen {
     width: 100vw;
     height: 100vh;
 }
-#gameBoard {
-    width: 100vw;
-    height: 100vh;
+.joinGameColFlex > * {
+    margin-top: 15px;
+}
+.joinGameColFlex > span {
+    margin-right: 5px;
+    font-size: 13pt;
+}
+#txtCode, #txtName {
+    border-radius: 8px;
+    padding: 5px;
+    border: 1px solid #a1a1a1;
+    font-size: 13pt;
+    width: 200px;
+}
+input[type="button"] {
+    border-radius: 10px;
+    padding: 7px 30px;
+    border: 1px solid black;
+    background-color: green;
+    color: white;
+    font-size: 15pt;
+}
+input[type="button"]:hover {
+    cursor: pointer;
+    background-color: #2a2;
+}
+#btnHostGame {
+    color: black;
+    font-size: 13pt;
+    padding: 3px 5px;
+}
+#btnJoinGame {
+    margin-top: 25px;
+}
+#titleMakeGuess {
+    font-size: 24pt;
+}
+.guessPlayer, .guessAnswer {
+    border: 1px solid black;
+    padding: 5px;
+    padding-left: 35px;
     position: relative;
-    overflow: hidden;
+    margin: 5px 5px;
+    border-radius: 6px;
+    font-size: 14pt;
+}
+.guessPlayer::before, .guessAnswer::before {
+    content: ' \2713';
+    display: inline-block;
+    position: absolute;
+    left: 3px;
+    bottom: 3px;
+    color: #aaa;
+    font-weight: 900;
+    border: 1px solid #aaa;
+    border-radius: 50%;
+    padding: 0px 3.5px 6px 2.5px;
+    height: 20px;
+    width: 20px;
+    margin-right: 3px;
+}
+.guessPlayer.selected::before, .guessAnswer.selected::before {
+    color: #00d;
+    border: 1px solid #00d;
 }
