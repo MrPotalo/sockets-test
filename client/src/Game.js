@@ -191,9 +191,7 @@ class Game extends Component {
                                     if (this.state.guessAnswerIndex === -1 || this.state.guessPlayerIndex === -1)
                                         return;
                                     this.props.Socket.emit("makeGuess", this.state.gameData.answers[this.state.guessAnswerIndex].index, this.state.guessPlayerIndex, (success) => {
-                                        if (success) {
-                                            this.setState({guessingIndex: -1, guessAnswerIndex: -1, guessPlayerIndex: -1, message: "Correct!"});
-                                        }
+                                        this.setState({guessingIndex: -1, guessAnswerIndex: -1, guessPlayerIndex: -1, message: (success ? "Correct!" : "Wrong!")});
                                     });
                                 }} type="button" value="Make guess"></input>
                             ];
