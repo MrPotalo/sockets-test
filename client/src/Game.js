@@ -118,17 +118,19 @@ class Game extends Component {
                         break;
                     case "guess":
                             innerContent = (
-                                [<span className="serverMessage">{(this.state.message || "Player " + this.state.gameData.players[this.state.guessingIndex].name + " is guessing.")}</span>,
-                                <div id="hostAnswerList" style={{display: "flex", flexDirection: "column", maxHeight: "80vh", position: "absolute", left: "50px", top: "50px"}}>
-                                {this.state.gameData.answers.map((answer, i) => {
-                                    let result = [<div id="hostAnswer" key={i}>{answer.answer}</div>];
-                                    if (i != this.state.gameData.answers.length-1) {
-                                        result.push(<hr/>)
-                                    }
-                                    return result;
-                                })}
-                                </div>]
-                            )
+                                <div style={{display: "flex", flexDirection: "row", height: "70vh", width: "100vw"}}>
+                                    <div id="hostAnswerList" style={{display: "inline-flex", float: "left", marginLeft: "50px", marginTop: "20px", flexDirection: "column", maxHeight: "80vh", height: "fit-content", maxWidth: "50vw", marginRight: "15px"}}>
+                                        {this.state.gameData.answers.map((answer, i) => {
+                                            let result = [<div id="hostAnswer" key={i}>{answer.answer}</div>];
+                                            if (i != this.state.gameData.answers.length-1) {
+                                                result.push(<hr/>)
+                                            }
+                                            return result;
+                                        })}
+                                    </div>
+                                    <span className="serverMessage" style={{maxWidth: "60vw"}}>{(this.state.message || "Player " + this.state.gameData.players[this.state.guessingIndex].name + " is guessing.")}</span>
+                                </div>
+                            );
                             break;
                     case "start":
                     default:
