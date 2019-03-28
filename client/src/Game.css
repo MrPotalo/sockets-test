@@ -82,6 +82,7 @@ input[type="button"]:hover {
     margin: 5px 5px;
     border-radius: 6px;
     font-size: 14pt;
+    overflow-wrap: break-word;
 }
 .guessPlayer.out, .guessAnswer.out {
     text-decoration-line: line-through;

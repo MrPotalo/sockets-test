@@ -182,7 +182,7 @@ class Game extends Component {
                             innerGameContent = [
                                 <span id="titleMakeGuess">Make a Guess</span>,
                                 <div style={{display: "flex", flexDirection: "row", margin: "15px 0px", justifyContent: "center"}}>
-                                    <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between", maxHeight: "70vh", overflow: "auto"}}>
+                                    <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between", maxHeight: "70vh", maxWidth: "50vw", overflow: "auto"}}>
                                         {answerArr}
                                     </div>
                                     <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between", maxHeight: "70vh", overflow: "auto"}}>
