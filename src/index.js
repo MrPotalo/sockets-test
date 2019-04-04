@@ -61,6 +61,7 @@ io.on('connection', (socket) => {
         if (answerIndex == guessPlayerIndex) {
             data[room].players[guessPlayerIndex].isOut = true;
             io.to(room).emit("playerOut", guessPlayerIndex);
+            data[room].players[playerIndex].score++;
             cbFn(true);
         } else {
             cbFn(false);
@@ -88,6 +89,7 @@ io.on('connection', (socket) => {
             data[room].answers = [];
             for (let i=0;i<data[room].players.length;i++) {
                 data[room].players[i].isOut = undefined;
+                data[room].players[i].score = 0;
             }
             data[room].currentGuesser = 0;
             data[room].numLeftToSubmit = data[room].players.length;
@@ -110,7 +112,7 @@ io.on('connection', (socket) => {
             }
             room = roomCode;
             playerIndex = data[roomCode].players.length;
-            data[roomCode].players.push({name: playerData.name, socket});
+            data[roomCode].players.push({name: playerData.name, score: 0, socket});
             socket.join(roomCode);
             cbFn({index: playerIndex});
             let tempData = getClientData(room);

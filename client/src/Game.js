@@ -20,11 +20,17 @@ class Game extends Component {
             this.setState({stage: "guess", guessingIndex: index, message: null});
         })
         props.Socket.on("madeGuess", (guesser, answer, guessed, correct) => {
-            this.setState({message: this.state.gameData.players[guesser].name + " has guessed that " + this.state.gameData.players[guessed].name + " said \"" + answer + "\". They are " + (correct ? "correct!" : "wrong!")});
+            this.setState((oldState) => {
+                let newState = _.clone(oldState);
+                newState.message = oldState.gameData.players[guesser].name + " has guessed that " + oldState.gameData.players[guessed].name + " said \"" + answer + "\". They are " + (correct ? "correct!" : "wrong!");
+                if (correct)
+                    newState.gameData.players[guesser].score++;
+                return newState;
+            });
             
             setTimeout(() => {
                 this.props.Socket.emit("nextGuesser", correct);
-            }, 5000)
+            }, 3000)
         })
         props.Socket.on("playerOut", (playerIndex) => {
             this.setState((oldState) => {
@@ -35,7 +41,7 @@ class Game extends Component {
         })
         props.Socket.on("gameOver", () => {
             this.setState((oldState) => {
-                return {stage: "answer", message: null, answer: "", gameData: {answers: null, players: oldState.gameData.players.map((player) => {player.isOut = null; return player})}, guessingIndex: -1}
+                return {stage: "answer", message: null, answer: "", gameData: {answers: null, players: oldState.gameData.players.map((player) => {player.isOut = null; player.score = 0; return player})}, guessingIndex: -1}
             });
         });
 
@@ -84,7 +90,7 @@ class Game extends Component {
         this.props.Socket.emit("requestJoin", this.state.playerData, (data, err) => {
             this.setState({waiting: undefined});
             if (!err) {
-                this.setState({screen: "mainGame", myIndex: data.index});
+                this.setState({screen: "mainGame", stage: "waiting", myIndex: data.index});
             } else {
                 alert(err.Message);
             }
@@ -103,7 +109,11 @@ class Game extends Component {
         const playerList = (
             <div id="playerList" style={{position: "absolute", bottom: "0px",width: "100%",height: "10vh", display: "flex", flexDirection: "row"}}>
                 {_.map(_.get(this.state, "gameData.players", []), (player, i) => {
-                    return <div key={i} style={{backgroundColor: "#fff", border: "1px solid black", padding: "10px", height: "100%", width: "100%"}}>{player.name}</div>
+                    return <div key={i} style={{position: 'relative', backgroundColor: "#fff", border: "1px solid black", padding: "0px 10px 10px 10px", height: "100%", width: "100%"}}>
+                        <div className='playerName'>{player.name}</div>
+                        <div class='playerScore'>{player.score}</div>
+                        {_.get(this.state, 'guessingIndex', -1) === i ? <div class='guessingHat' /> : null}
+                    </div>
                 })}
             </div>
         )
@@ -156,13 +166,18 @@ class Game extends Component {
             case "mainGame":
                 let innerGameContent = null;
                 switch (this.state.stage) {
+                    case "waiting":
+                        innerGameContent = (
+                            <span style={{fontSize: '21pt', marginTop: '45vh', display: 'inline-block'}}>Waiting for the game to start...</span>
+                        );
+                        break;
                     case "answer":
                         innerGameContent = (
-                            [<span id="titleEnterAnswer">Enter your Answer</span>,
-                            <br/>,
-                            <input id="inputAnswer" onChange={this.onChange} data-index="answer" value={this.state.answer} type="text"></input>,
-                            <br/>,
-                            <input id="btnSubmitAnswer" onClick={this.submitAnswer} type="button" value="Submit"></input>]
+                            [<span key={0} id="titleEnterAnswer">Enter your Answer</span>,
+                            <br key={1}/>,
+                            <input key={2} id="inputAnswer" onChange={this.onChange} data-index="answer" value={this.state.answer} type="text"></input>,
+                            <br key={3}/>,
+                            <input key={4} id="btnSubmitAnswer" onClick={this.submitAnswer} type="button" value="Submit"></input>]
                         )
                         break;
                     case "guess":
@@ -207,7 +222,6 @@ class Game extends Component {
                 content = (
                     <div style={{height: "100vh"}}>
                         {innerGameContent}
-                        {playerList}
                     </div>
                 );
                 break;

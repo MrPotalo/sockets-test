@@ -63,6 +63,7 @@ input[type="button"]:hover {
 }
 #hostAnswer {
     font-size: 22pt;
+    overflow-wrap: break-word;
 }
 #titleMakeGuess, #titleEnterAnswer {
     font-size: 24pt;
@@ -105,4 +106,33 @@ input[type="button"]:hover {
 .guessPlayer.selected::before, .guessAnswer.selected::before {
     color: #00d;
     border: 1px solid #00d;
+}
+.playerName {
+    font-size: 15pt;
+    padding: 0px 0px 3px 0px;
+}
+.playerScore {
+    background-color: #060;
+    border-radius: 15px;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+    padding: 2px 20px;
+    line-height: 18px;
+    padding-bottom: 3px;
+    margin: 0 auto;
+    color: #fff;
+    border: 2px solid #000;
+}
+.guessingHat {
+    position: absolute;
+    top: -110px;
+    background-image: url(/static/media/guessingHat.e52ee8a6.png);
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    width: 100%;
+    height: 100px;
+    padding: 15px;
+    margin: 0px -15px;
 }
