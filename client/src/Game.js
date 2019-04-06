@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import './Game.css';
+import Cookies from 'universal-cookie';
 
 class Game extends Component {
+
+    cookies = new Cookies();
+
     constructor(props) {
         super(props);
 
@@ -10,8 +14,12 @@ class Game extends Component {
         props.Socket.on('join', ({socketId}) => {
             this.setState({id: socketId});
         });
-        props.Socket.on("dataChanged", (data) => {
-            this.setState({gameData: data});
+        props.Socket.on("dataChanged", (gameData, data) => {
+            console.log(data);
+            if (this.state.screen === 'hosting') {
+                data = {};
+            }
+            this.setState({...data, gameData});
         })
         props.Socket.on("gameStart", () => {
             this.setState({stage: "answer"});
@@ -45,10 +53,13 @@ class Game extends Component {
             });
         });
 
+        const originalCode = this.cookies.get('joinCode') || "";
+        const originalName = this.cookies.get('joinName') || "";
+
         this.state = {
             screen: "start",
             stage: "start", 
-            playerData: {code: "", name: ""}, 
+            playerData: {code: originalCode, name: originalName}, 
             gameRules: {extraGuesses: true, guessesWhenOut: false},
             guessPlayerIndex: -1, 
             guessAnswerIndex: -1
@@ -58,6 +69,10 @@ class Game extends Component {
     onChange = (e) => {
         const val = e.target.value;
         const index = e.target.dataset.index;
+        const cookieVal = e.target.dataset.cookie;
+        if (cookieVal) {
+            this.cookies.set(cookieVal, val);
+        }
         this.setState((oldState) => {
             let newState = _.clone(oldState);
             _.set(newState, index, val);
@@ -90,7 +105,7 @@ class Game extends Component {
         this.props.Socket.emit("requestJoin", this.state.playerData, (data, err) => {
             this.setState({waiting: undefined});
             if (!err) {
-                this.setState({screen: "mainGame", stage: "waiting", myIndex: data.index});
+                this.setState({screen: "mainGame", myIndex: data.index});
             } else {
                 alert(err.Message);
             }
@@ -240,8 +255,8 @@ class Game extends Component {
                                         <span>Your name: </span>
                                     </div>
                                     <div className="joinGameColFlex" style={{display: "flex", flexDirection: "column", justifyContent: "space-around"}}>
-                                        <input id="txtCode" data-index={"playerData.code"} value={this.state.playerData.code} onChange={this.onChange} type="text" placeholder="CODE"></input>
-                                        <input id="txtName" data-index={"playerData.name"} value={this.state.playerData.name} onChange={this.onChange} type="text" placeholder="NAME"></input>
+                                        <input id="txtCode" data-cookie={'joinCode'} data-index={"playerData.code"} value={this.state.playerData.code} onChange={this.onChange} type="text" placeholder="CODE"></input>
+                                        <input id="txtName" data-cookie={'joinName'} data-index={"playerData.name"} value={this.state.playerData.name} onChange={this.onChange} type="text" placeholder="NAME"></input>
                                     </div>
                                 </div>
                                 <br/>

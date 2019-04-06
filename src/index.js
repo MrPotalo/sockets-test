@@ -105,7 +105,29 @@ io.on('connection', (socket) => {
         const roomCode = _.toUpper(playerData.code);
         if (data[roomCode]) {
             for (let i=0;i<data[roomCode].players.length;i++) {
-                if (data[roomCode].players[i].name == playerData.name) {
+                let player = data[roomCode].players[i];
+                if (player.name == playerData.name) {
+                    if (player.disconnected) {
+                        console.log(i + " reconnected");
+                        player.disconnected = undefined;
+                        playerIndex = i;
+                        room = roomCode;player.socket = socket;
+                        let tempGameData = getClientData(room);
+                        let tempData = {};
+                        tempData.screen = 'mainGame';
+                        if (!data[room].gameRules) {
+                            tempData.stage = 'waiting';
+                        } else if (!data[room].answers[playerIndex]) {
+                            tempData.stage = 'answer';
+                        } else {
+                            tempData.stage = 'guess';
+                            tempData.guessingIndex = data[room].currentGuesser;
+                        }
+                        socket.join(roomCode);
+                        cbFn({index: playerIndex});
+                        io.to(roomCode).emit("dataChanged", tempGameData, tempData);
+                        return;
+                    }
                     cbFn(null, {Message: "A player with that name is already in this room!"});
                     return;
                 }
@@ -116,13 +138,15 @@ io.on('connection', (socket) => {
             socket.join(roomCode);
             cbFn({index: playerIndex});
             let tempData = getClientData(room);
-            io.to(roomCode).emit("dataChanged", tempData);
+            io.to(roomCode).emit("dataChanged", tempData, {stage: 'waiting'});
         } else {
             cbFn(null, {Message: "Room does not exist!"});
         }
     })
     socket.on('disconnect', () => {
-        
+        if (playerIndex > -1) {
+            data[room].players[playerIndex].disconnected = true;
+        }
     })
 });
 
