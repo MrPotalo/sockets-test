@@ -151,7 +151,9 @@ class Game extends Component {
                                 <br/>,
                                 <span>Can guess after your answer has been correctly guessed:</span>,<input type="checkbox" data-index="gameRules.guessesWhenOut" checked={this.state.gameRules.guessesWhenOut} onChange={this.checkChanged}></input>,
                                 <br/>,
-                                <input onClick={this.startGame} style={{marginTop: "50px"}} type="button" value="Start game"></input>
+                                <input onClick={this.startGame} style={{marginTop: "50px"}} type="button" value="Start game"></input>,
+                                <br/>,
+                                <span style={{fontSize: '18pt'}}>{"To join, go to "}<span style={{fontWeight: '800', display: 'inline-block', marginTop: '50px'}}>{"thinggame.herokuapp.com"}</span></span>
                             ]
                 }
                 content = (
